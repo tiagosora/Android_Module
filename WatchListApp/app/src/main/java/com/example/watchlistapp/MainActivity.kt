@@ -4,16 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.watchlistapp.ui.theme.WatchListAppTheme
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.watchlistapp.ui.screens.AddScreen
 import com.example.watchlistapp.ui.screens.ListScreen
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
+import com.example.watchlistapp.ui.theme.WatchListAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,39 +31,36 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun WatchListApp() {
-    val pagerState = rememberPagerState()
-    val coroutineScope = rememberCoroutineScope()
+    val navController = rememberNavController()
 
     Scaffold(
-        topBar = {
-            TabRow(
-                selectedTabIndex = pagerState.currentPage,
-                contentColor = MaterialTheme.colorScheme.primary
-            ) {
-                Tab(
-                    selected = pagerState.currentPage == 0,
-                    onClick = { coroutineScope.launch { pagerState.scrollToPage(0) } }
-                ) {
-                    Text("Add")
-                }
-                Tab(
-                    selected = pagerState.currentPage == 1,
-                    onClick = { coroutineScope.launch { pagerState.scrollToPage(1) } }
-                ) {
-                    Text("List")
-                }
-            }
-        }
+        bottomBar = { BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
-        HorizontalPager(
-            count = 2,
-            state = pagerState,
+        NavHost(
+            navController = navController,
+            startDestination = "add_screen",
             modifier = Modifier.padding(innerPadding)
-        ) { page ->
-            when (page) {
-                0 -> AddScreen()
-                1 -> ListScreen()
-            }
+        ) {
+            composable("add_screen") { AddScreen() }
+            composable("list_screen") { ListScreen() }
         }
+    }
+}
+
+@Composable
+fun BottomNavigationBar(navController: NavHostController) {
+    NavigationBar {
+        NavigationBarItem(
+            selected = navController.currentDestination?.route == "add_screen",
+            onClick = { navController.navigate("add_screen") },
+            icon = { Icon(Icons.Filled.Add, contentDescription = "Add") },
+            label = { Text("Add") }
+        )
+        NavigationBarItem(
+            selected = navController.currentDestination?.route == "list_screen",
+            onClick = { navController.navigate("list_screen") },
+            icon = { Icon(Icons.Filled.List, contentDescription = "List") },
+            label = { Text("List") }
+        )
     }
 }

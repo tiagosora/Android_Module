@@ -1,5 +1,6 @@
 package com.example.watchlistapp.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,11 +18,13 @@ import com.example.watchlistapp.viewmodel.WatchListViewModel
 fun ListScreen(viewModel: WatchListViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     var sortOrder by remember { mutableStateOf("No sorting") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
         Text(
             text = "Your Watch List",
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(vertical = 16.dp).fillMaxWidth().wrapContentWidth()
         )
 
         DropdownMenu(sortOrder) { newSortOrder -> sortOrder = newSortOrder }
@@ -50,23 +53,25 @@ fun ListScreen(viewModel: WatchListViewModel = androidx.lifecycle.viewmodel.comp
 fun DropdownMenu(selectedOption: String, onOptionSelected: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box {
-        Button(onClick = { expanded = true }) {
-            Text(selectedOption)
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(text = { Text("No sorting") }, onClick = {
-                onOptionSelected("No sorting")
-                expanded = false
-            })
-            DropdownMenuItem(text = { Text("Sort by Title") }, onClick = {
-                onOptionSelected("Sort by Title")
-                expanded = false
-            })
-            DropdownMenuItem(text = { Text("Sort by State") }, onClick = {
-                onOptionSelected("Sort by State")
-                expanded = false
-            })
+    Row (Modifier.fillMaxWidth().wrapContentWidth()) {
+        Box {
+            Button(onClick = { expanded = true }) {
+                Text(selectedOption)
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                DropdownMenuItem(text = { Text("No sorting") }, onClick = {
+                    onOptionSelected("No sorting")
+                    expanded = false
+                })
+                DropdownMenuItem(text = { Text("Sort by Title") }, onClick = {
+                    onOptionSelected("Sort by Title")
+                    expanded = false
+                })
+                DropdownMenuItem(text = { Text("Sort by State") }, onClick = {
+                    onOptionSelected("Sort by State")
+                    expanded = false
+                })
+            }
         }
     }
 }
@@ -78,7 +83,9 @@ fun WatchListItem(
     onToggle: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
