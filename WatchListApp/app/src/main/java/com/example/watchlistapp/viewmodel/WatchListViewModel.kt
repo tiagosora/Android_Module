@@ -23,7 +23,7 @@ class WatchListViewModel(application: Application) : AndroidViewModel(applicatio
             repository.watchListFlow.collectLatest { list ->
                 if (list.isEmpty()) {
                     // Use mocked data if the list is empty
-                    for (i in 1..100) {
+                    for (i in 1..15) {
                         watchList.add(WatchItem("Item $i"))
                     }
                 } else {

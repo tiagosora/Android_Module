@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -63,7 +63,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         NavigationBarItem(
             selected = navController.currentDestination?.route == "list_screen",
             onClick = { navController.navigate("list_screen") },
-            icon = { Icon(Icons.Filled.List, contentDescription = "List") },
+            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "List") },
             label = { Text("List") }
         )
     }
