@@ -1,38 +1,64 @@
 package com.example.watchlistapp.viewmodel
 
+import android.app.Application
 import androidx.compose.runtime.mutableStateListOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.watchlistapp.data.WatchItem
+import com.example.watchlistapp.repository.WatchListRepository
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-class WatchListViewModel : ViewModel() {
-    // Mutable state for the watch list
+class WatchListViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository = WatchListRepository(application)
     val watchList = mutableStateListOf<WatchItem>()
 
-    // TODO: Remove this block of code
-    // Add 100 more mocked items to the watch list
     init {
-        for (i in 1..100) {
-            watchList.add(WatchItem("Item $i"))
+        loadWatchList()
+    }
+
+    private fun loadWatchList() {
+        viewModelScope.launch {
+            repository.watchListFlow.collectLatest { list ->
+                if (list.isEmpty()) {
+                    // Use mocked data if the list is empty
+                    for (i in 1..100) {
+                        watchList.add(WatchItem("Item $i"))
+                    }
+                } else {
+                    // Load persisted data
+                    watchList.clear()
+                    watchList.addAll(list)
+                }
+            }
         }
     }
 
-    // Add a new item
     fun addItem(title: String) {
         if (title.isNotBlank()) {
-            watchList.add(WatchItem(title))
+            val newItem = WatchItem(title)
+            watchList.add(newItem)
+            saveWatchList()
         }
     }
 
-    // Remove an item
     fun removeItem(item: WatchItem) {
         watchList.remove(item)
+        saveWatchList()
     }
 
-    // Mark an item as watched/unwatched
     fun toggleWatched(item: WatchItem) {
         val index = watchList.indexOf(item)
         if (index != -1) {
             watchList[index] = watchList[index].copy(isWatched = !watchList[index].isWatched)
+            saveWatchList()
+        }
+    }
+
+    private fun saveWatchList() {
+        viewModelScope.launch {
+            repository.saveWatchList(watchList)
         }
     }
 }

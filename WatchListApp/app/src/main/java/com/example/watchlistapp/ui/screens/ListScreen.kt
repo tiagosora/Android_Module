@@ -1,6 +1,5 @@
 package com.example.watchlistapp.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -15,7 +15,7 @@ import com.example.watchlistapp.data.WatchItem
 import com.example.watchlistapp.viewmodel.WatchListViewModel
 
 @Composable
-fun ListScreen(viewModel: WatchListViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun ListScreen(viewModel: WatchListViewModel) {
     var sortOrder by remember { mutableStateOf("No sorting") }
 
     Column(modifier = Modifier
@@ -33,7 +33,7 @@ fun ListScreen(viewModel: WatchListViewModel = androidx.lifecycle.viewmodel.comp
 
         val sortedList = when (sortOrder) {
             "Sort by Title" -> viewModel.watchList.sortedBy { it.title }
-            "Sort by State" -> viewModel.watchList.sortedBy { it.isWatched }
+            "Sort by State" -> viewModel.watchList.sortedBy { it.isWatched }.reversed().sortedBy { it.title }
             else -> viewModel.watchList
         }
 
@@ -88,18 +88,18 @@ fun WatchListItem(
             .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column {
-            Text(text = item.title, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                text = if (item.isWatched) "Watched" else "Not Watched",
-                color = if (item.isWatched) Color.Green else Color.Red
-            )
-        }
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = item.isWatched, onCheckedChange = { onToggle() })
-            IconButton(onClick = { onRemove() }) {
-                Icon(Icons.Default.Delete, contentDescription = "Remove")
+            Column(modifier = Modifier.padding(start = 8.dp)) {
+                Text(text = item.title, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = if (item.isWatched) "Watched" else "Not Watched",
+                    color = if (item.isWatched) Color.Green else Color.Red
+                )
             }
+        }
+        IconButton(onClick = { onRemove() }) {
+            Icon(Icons.Default.Delete, contentDescription = "Remove")
         }
     }
 }

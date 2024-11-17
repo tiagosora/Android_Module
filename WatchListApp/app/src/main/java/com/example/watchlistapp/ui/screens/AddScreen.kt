@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.watchlistapp.viewmodel.WatchListViewModel
 
 @Composable
-fun AddScreen(viewModel: WatchListViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun AddScreen(viewModel: WatchListViewModel) {
     var textFieldState by remember { mutableStateOf(TextFieldValue("")) }
 
     Column(
